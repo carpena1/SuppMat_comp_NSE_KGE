@@ -37,4 +37,4 @@ The summary of model datasets used in the study are summarised in Table below (T
 
 ### 2. Analysis tools
 
-FITEVAL (https://abe.ufl.edu/carpena/software/fiteval/) Matlab scripts were used for analysis of the individual {_obs<sub>i</sub>, pred<sub>i</sub>_} results in each study of the datasets in Table 1.
+FITEVAL (https://abe.ufl.edu/carpena/software/fiteval/) Matlab scripts were used for analysis of the individual {_obs<sub>i</sub>, pred<sub>i</sub>_} values for each model evaluation in Table 1.
