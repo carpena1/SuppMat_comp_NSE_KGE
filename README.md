@@ -8,7 +8,7 @@ By Axel Ritter<sup>1</sup> and Rafael Muñoz-Carpena<sup>2,\*</sup>
 
 This repository contains the supplementary files with the statistics and metrics for all the datasets used for model evaluation in the manuscript (Table 1).
 
-### Datasets 
+### 1. Datasets 
 
 **Datasets description**
 
@@ -37,6 +37,6 @@ The summary model efficiency sttistics are summarised in Table 1 from the manusc
 
 The extended Table containing the metrics for each set in the dataset used in the study figures and Tables can be downloaded here **[Datasets_1-10_statistics.csv](Datasets_1-10_statistics.csv)**
 
-### Analysis tools
+### 2. Analysis tools
 
 FITEVAL (https://abe.ufl.edu/carpena/software/fiteval/) Matlab scripts were used for analysis of the individual {obs_i, pred_1} results in each study of the datasets in Table 1.
