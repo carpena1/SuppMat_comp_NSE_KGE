@@ -12,7 +12,7 @@ This repository contains the supplementary files with the statistics and metrics
 
 **Datasets description**
 
-The summary model efficiency sttistics are summarised in Table 1 from the manuscript shown below.
+The summary model datasets used in the study are summarised in Table 1 shown below.
 
 **Table 1. Model testing datasets used.**
 
