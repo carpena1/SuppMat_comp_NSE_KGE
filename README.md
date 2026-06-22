@@ -14,7 +14,7 @@ This repository contains the supplementary files with the statistics and metrics
 
 The summary model datasets used in the study are summarised in Table 1 shown below.
 
-**Table 1. Model testing datasets used.**
+***Table 1. Model testing datasets used.***
 
 | Dataset Nr./ Dataset Ref. | Predicted variables <sup>a</sup> | N <sup>b</sup> | NSE range <sup>c</sup> [KSE range] | Reference |
 |---|---|---|---|---|
