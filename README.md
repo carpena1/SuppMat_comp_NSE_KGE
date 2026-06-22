@@ -12,11 +12,11 @@ This repository contains the supplementary files with the statistics and metrics
 
 **Download Table**
 
-The extended Table containing the metrics for each set in the dataset used in the study figures and Tables can be downloaded here **[Datasets_1-10_statistics.csv](Datasets_1-10_statistics.csv)**
+The extended Table containing the metrics for each model evaluation set in the study dataset can be downloaded here **[Datasets_1-10_statistics.csv](Datasets_1-10_statistics.csv)**
 
 **Datasets description**
 
-The summary model datasets used in the study are summarised in Table 1 shown below.
+The summary of model datasets used in the study are summarised in Table below (Table 1 in manuscript).
 
 | Dataset Nr./ Dataset Ref. | Predicted variables <sup>a</sup> | N <sup>b</sup> | NSE range <sup>c</sup> [KSE range] | Reference |
 |---|---|---|---|---|
