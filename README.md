@@ -10,11 +10,13 @@ This repository contains the supplementary files with the statistics and metrics
 
 ### 1. Datasets 
 
+**Download Table**
+
+The extended Table containing the metrics for each set in the dataset used in the study figures and Tables can be downloaded here **[Datasets_1-10_statistics.csv](Datasets_1-10_statistics.csv)**
+
 **Datasets description**
 
 The summary model datasets used in the study are summarised in Table 1 shown below.
-
-***Table 1. Model testing datasets used.***
 
 | Dataset Nr./ Dataset Ref. | Predicted variables <sup>a</sup> | N <sup>b</sup> | NSE range <sup>c</sup> [KSE range] | Reference |
 |---|---|---|---|---|
@@ -32,10 +34,6 @@ The summary model datasets used in the study are summarised in Table 1 shown bel
 | 10/CAMELS | Runoff (mm d<sup>-1</sup>) | 613 | 0.207 – 0.922 [-0.022 – 0.933] | Newman et al. (2015) |
 
 <sup>a</sup> (-) indicates dimensionless standardized data series, which implies mean of observation close to zero, and thus values with alternating sign in the dataset; <sup>b</sup> N is the number of model evaluation in each study; <sup>c</sup> Performance metrics were computed using the FITEVAL software (Ritter and Muñoz-Carpena (2013)) option that allows for discarding repeated paired values.
-
-**Download Table:**
-
-The extended Table containing the metrics for each set in the dataset used in the study figures and Tables can be downloaded here **[Datasets_1-10_statistics.csv](Datasets_1-10_statistics.csv)**
 
 ### 2. Analysis tools
 
