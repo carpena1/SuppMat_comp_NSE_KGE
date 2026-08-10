@@ -4,7 +4,7 @@
 
 By Axel Ritter<sup>1</sup> and Rafael Muñoz-Carpena<sup>2,\*</sup>
 
-*Under review in Journal of Hydrology, June 2026*
+*Under review in Environmental Modelling & Software, June 2026*
 
 This repository contains the supplementary files with the statistics and metrics for all the datasets used for model evaluation in the manuscript (Table 1).
 
