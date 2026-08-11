@@ -35,6 +35,12 @@ The model datasets used in the study are summarized in the Table below (Table 1 
 
 <sup>a</sup> (-) indicates dimensionless standardized data series, which implies mean of observation close to zero, and thus values with alternating sign in the dataset; <sup>b</sup> N is the number of model evaluations in each study; <sup>c</sup> Performance metrics were computed using the FITEVAL software ([Ritter and Muñoz-Carpena (2013)](http://dx.doi.org/10.1016/j.jhydrol.2012.12.004)) option that allows for discarding repeated paired values.
 
+**Data and scripts availability**
+
+The MATLAB scripts to automatically generate the manuscript figures and the numeric values of Tables 1 and 2 are available in the folder **[ML_Codes](ML_Codes)**, so that the reader can completely reproduce the work. The script corresponding to each figure and table, and the input files it requires, are listed in [ML_Codes/README.txt](ML_Codes/README.txt). These include `ProcessCamels_files.m`, the script to extract the observed and simulated paired values of the files available in folder `CAMELS_model_output_daymet/model_output/flow_timeseries/daymet`, created when unzipping the original CAMELS data file [basin_timeseries_v1p2_modelOutput_daymet.zip](https://zenodo.org/records/15529996/files/basin_timeseries_v1p2_modelOutput_daymet.zip?download=1).
+
+All the files containing the observed and simulated paired values (corresponding to sets 1–10 in the Table above) are also shared in the folder **[YoYp_Sets](YoYp_Sets)**, with one subfolder per dataset.
+
 ### 2. Analysis tools
 
 FITEVAL (https://abe.ufl.edu/carpena/software/fiteval/) Matlab scripts were used for analysis of the individual {_obs<sub>i</sub>, pred<sub>i</sub>_} values for each model evaluation in Table 1.
