@@ -13,6 +13,7 @@ figRes=300; figExt='png'; Mksz=6; fntSz=16;
  colsdYo=9; 
  colsdYp=10;
  col_r=11;
+ col_n=12;
  colRBias=13;
  colKGEm=14;
 
@@ -38,12 +39,19 @@ fprintf('Reading CAMELS dataset ... ');
    CAMELS(:,colNSE)=rounddec(CAMELS(:,colNSE),5); 
    CAMELS(:,colKGEm)=rounddec(CAMELS(:,colKGEm),3); 
 
-   CAMELS_r=rounddec(CAMELS(:,col_r),5); % Pearson correlation coefficient
+   CAMELS_rho=rounddec(CAMELS(:,col_r),5); % Pearson correlation coefficient
    CAMELS_alpha=CAMELS(:,colsdYp)./CAMELS(:,colsdYo); % Variability component
    CAMELS_beta=1+((CAMELS(:,colmYp)-CAMELS(:,colmYo))./CAMELS(:,colsdYo));
-
-   KGEm_prd=rounddec(1-sqrt(max(0,(CAMELS_r-1).^2+2*CAMELS_alpha.*(CAMELS_r-1)+1-CAMELS(:,colNSE))),3);
+   
+   % Correction du to using sample variance
+    CAMELS_n=CAMELS(:,col_n); % number of paired values (n)
+    f=(CAMELS_n - 1)./CAMELS_n;
+    FF=(1-f).*(CAMELS_alpha.^2-2.*CAMELS_alpha.*CAMELS_rho+CAMELS(:,colNSE));
+   
+   KGEm_prd=rounddec(1-sqrt(max(0,(CAMELS_rho-1).^2+2*CAMELS_alpha.*(CAMELS_rho-1)+1-CAMELS(:,colNSE)+FF)),3);
    CAMELS(:,end+1)=KGEm_prd; colKGEm_prd=size(CAMELS,2); % KGE* from NSE
+
+   CAMELS_Rho2Alpha=CAMELS_rho./CAMELS_alpha;
 
     
  CAMELS_BiasedId=find(abs(CAMELS(:,colRBias))>biasth); 
@@ -77,7 +85,7 @@ fprintf('Reading CAMELS dataset ... ');
     
    %%%%  Fig 5a  %%%%  
    disp('KGE* vs Eq.6');
-   figPos(1)=950; figPos(2)=50; 
+   figPos(1)=950; figPos(2)=550; 
    fig5a=figure('Position',figPos,'Color','w');
      serColor=[0 .5 0]; MrkrCol='none';
       plot(CAMELS(:,colKGEm_prd),CAMELS(:,colKGEm),'Color',serColor,...
@@ -85,8 +93,8 @@ fprintf('Reading CAMELS dataset ... ');
       plot(IntX,IntY,'k--');
 
       figName='Fig5a_KGE_vs_Eq6';
-      fprintf(1,' Number of total cases considered in Fig%s: %i\n',...
-      figName(1:3),sum(~isnan(CAMELS(:,colKGEm))));
+      fprintf(1,' Number of total cases considered in %s: %i\n',...
+      figName(1:5),sum(~isnan(CAMELS(:,colKGEm))));
       legTxt={'Set 10'};
 
       formatFig(gcf,axPos,IntX,IntY,Eq6LbTxt,Eq4LbTxt,'a)',legTxt);
@@ -99,13 +107,14 @@ fprintf('Reading CAMELS dataset ... ');
 
      
 NSE=CAMELS(:,colNSE); NSE(CAMELS_DiscardedId)=nan;
-fprintf(1,' Number of total cases considered (lying inside UB): %i of %i\n\n',...
-     sum(~isnan(NSE)),sum(~isnan(CAMELS(:,colNSE)))); 
+NrSelCases=sum(~isnan(NSE)); NrTotalCases=sum(~isnan(CAMELS(:,colNSE)));
+fprintf(1,' Number of total cases considered (lying inside UB): %i of %i (%1.1f%%)\n\n',...
+     NrSelCases,NrTotalCases,100*NrSelCases/NrTotalCases); 
 
 
 %%%%  Fig 5b  %%%%
    disp('KGE* vs. Eq.7');
-   figPos(1)=950; figPos(2)=558; 
+   figPos(1)=950; figPos(2)=50; 
    fig5b=figure('Position',figPos,'Color','w');
        serColor=[0 .5 0]; MrkrCol='none';
        x=NSE; eval(['y=' feq ';']);
@@ -119,33 +128,81 @@ fprintf(1,' Number of total cases considered (lying inside UB): %i of %i\n\n',..
        set(hBand(1),'FaceColor','none'); 
        set(hBand(2),'FaceColor',[.87 0.92 0.98]); 
        uistack(hBand,'bottom');
+       set(gca,'Layer','top');
    
      figName='Fig5b_KGEm_vs_Eq6';
-     fprintf(1,' Number of total cases considered in Fig%s: %i\n',...
-     figName(1:3),sum(~isnan(NSE)));
+     fprintf(1,' Number of total cases considered in %s: %i (%1.1f%%)\n',...
+     figName(1:5),sum(~isnan(NSE)),100*NrSelCases/NrTotalCases);
 
      formatFig(gcf,axPos,IntX,IntY,Eq7LbTxt,Eq4LbTxt,'b)',legTxt);
 
-     fprintf(1,' Set %i: %s [%1.3f - %1.3f]\n',10,'NSE',min(NSE),max(NSE));
-     fprintf(1,' Set %i: %s [%1.3f - %1.3f]\n',10,'KGE*',min(CAMELS(~isnan(NSE),colKGEm)),max(CAMELS(~isnan(NSE),colKGEm)));
-     beta_n=CAMELS_beta-1;
-     fprintf(1,' Set %i: %s [%1.4f - %1.4f]\n',10,'beta_n',min(beta_n(~isnan(NSE))),max(beta_n(~isnan(NSE))));
-     disp(' ');
+     [vmed,viqr,vmin,vmax]=ComputeStats(NSE);
+     fprintf(1,' Set %i: %s [%1.3f - %1.3f]; Median= %1.3f; IQR= %1.3f\n',10,'NSE',...
+         vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS(~isnan(NSE),colKGEm));
+     fprintf(1,' Set %i: %s [%1.3f - %1.3f]; Median= %1.3f; IQR= %1.3f\n',10,'KGE*',...
+         vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_beta(~isnan(NSE))-1);
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'beta_n',...
+        vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_rho(~isnan(NSE)));
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'rho',...
+        vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_alpha(~isnan(NSE)));
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'alpha',...
+        vmin,vmax,vmed,viqr);
+     disp(' '); 
      
-     NSED=CAMELS(:,colNSE); NSED(~isnan(NSE))=nan;
-     fprintf(1,' Number of total cases DISCARDED: %i\n',sum(~isnan(NSED)));
-     fprintf(1,' Set %i: %s [%1.3f - %1.3f]\n',10,'NSE',min(NSED),max(NSED));
-     fprintf(1,' Set %i: %s [%1.3f - %1.3f]\n',10,'KGE*',min(CAMELS(~isnan(NSED),colKGEm)),max(CAMELS(~isnan(NSED),colKGEm)));
-     beta_n=CAMELS_beta-1;
-     fprintf(1,' Set %i: %s [%1.4f - %1.4f]\n',10,'beta_n',min(beta_n(~isnan(NSED))),max(beta_n(~isnan(NSED))));
-     disp(' ');
+     NSED=CAMELS(:,colNSE); NSED(~isnan(NSE))=nan; [vmed,viqr,vmin,vmax]=ComputeStats(NSED);
+     fprintf(1,' Number of total cases DISCARDED: %i (%1.1f%%)\n',sum(~isnan(NSED)),100*sum(~isnan(NSED))/NrTotalCases);
+     fprintf(1,' Set %i: %s [%1.3f - %1.3f]; Median= %1.3f; IQR= %1.3f\n',10,'NSE',...
+        vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS(~isnan(NSED),colKGEm));
+     fprintf(1,' Set %i: %s [%1.3f - %1.3f]; Median= %1.3f; IQR= %1.3f\n',10,'KGE*',...
+         vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_beta(~isnan(NSED))-1);
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'beta_n',...
+       vmin,vmax,vmed,viqr);
+        [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_rho(~isnan(NSED)));
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'rho',...
+        vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_alpha(~isnan(NSED)));
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'alpha',...
+        vmin,vmax,vmed,viqr);
+
+     disp(' '); clear dCAMELS NSED dbeta_n
      
      
 [nse,kge_mod,rmse]=GoF_indices([CAMELS(:,colKGEm) y]);
  fprintf(1,' NSE= %1.3f\n KGE*= %1.3f\n RMSE= %1.3f\n\n',nse,kge_mod,rmse);
 
+      NSE=CAMELS(:,colNSE); [vmed,viqr,vmin,vmax]=ComputeStats(NSE);
+     fprintf(1,' Number of total cases: %i (%1.1f%%)\n',sum(~isnan(NSE)),100*sum(~isnan(NSE))/NrTotalCases);
+     fprintf(1,' Set %i: %s [%1.3f - %1.3f]; Median= %1.3f; IQR= %1.3f\n',10,'NSE',...
+        vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS(~isnan(NSE),colKGEm));
+     fprintf(1,' Set %i: %s [%1.3f - %1.3f]; Median= %1.3f; IQR= %1.3f\n',10,'KGE*',...
+         vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_beta(~isnan(NSE))-1);
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'beta_n',...
+       vmin,vmax,vmed,viqr);
+   
+           [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_rho(~isnan(NSE)));
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'rho',...
+        vmin,vmax,vmed,viqr);
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_alpha(~isnan(NSE)));
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'alpha',...
+       vmin,vmax,vmed,viqr);
+
+     [vmed,viqr,vmin,vmax]=ComputeStats(CAMELS_Rho2Alpha);
+     fprintf(1,' Set %i: %s [%1.4f - %1.4f]; Median= %1.4f; IQR= %1.4f\n',10,'ks=rho/alpha',...
+        vmin,vmax,vmed,viqr);
+
+     disp(' '); clear dCAMELS NSE dbeta_n
+
+     
  
- function hTxt=AddText(figh,txt_label,fntsz,xv,yv,align,varargin)
+function hTxt=AddText(figh,txt_label,fntsz,xv,yv,align,varargin)
 cl='k'; fntwgt='normal';
 
 switch nargin
@@ -161,7 +218,7 @@ try figure(figh);catch, subplot(figh); end
 end %----
 
 
-function formatFig(hFig,axPos,rngX,rngY,xLbTxt,Eq6LbTxt,varargin)
+function formatFig(hFig,axPos,rngX,rngY,xLbTxt,yLbTxt,varargin)
  legendTxt=''; letter='';
  switch nargin
     case 7, letter=varargin{1}; 
@@ -178,7 +235,7 @@ function formatFig(hFig,axPos,rngX,rngY,xLbTxt,Eq6LbTxt,varargin)
   hA=gca; hA.YRuler.TickLabelFormat='%5.1f'; % Y-axis in %
   hA.XRuler.TickLabelFormat='%1.1f'; % X-axis in %
   if ~isempty(legendTxt); legend(legendTxt,'Location',LOC,'box','off'); end
-  ylabel(Eq6LbTxt,'Fontsize',fntSz,'fontweight','bold');
+  ylabel(yLbTxt,'Fontsize',fntSz,'fontweight','bold');
   xlabel(xLbTxt,'Fontsize',fntSz,'fontweight','bold');
   AddText(gcf,letter,fntSz+2,-.15,1,'left','bold');
   if ~isempty(figName)
@@ -202,4 +259,12 @@ function [nse,kge_mod,rmse]=GoF_indices(YoYp)
    SS=sum((Yobs-mean(Yobs)).^2);
    nse=1-SSQ/SS; 
    rmse=sqrt(SSQ/length(Yobs));
+end%---
+
+function [medV,iqrV,minV,maxV]=ComputeStats(x)
+  medV=nanmedian(x);
+  iqrV=iqr(x(~isnan(x)));
+  minV=nanmin(x);
+  maxV=nanmax(x);
+  
 end%---
