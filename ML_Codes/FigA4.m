@@ -55,7 +55,24 @@ function drawGraph(filename,panelNr)
  beta=(1+(mean(Yp)-mean(Yo))/std(Yo)); 
  KGEm=1-sqrt((r-1)^2 + (alpha-1)^2 + (beta-1)^2);
  beta_n=beta-1;
+ 
+  nse_j=NSE;
+  ks_j=r/alpha;
+  LB=@(x) 1-sqrt(1.9114*(x)-3.9092*sqrt(x)+2);
+  L=rounddec(LB(nse_j),3); % Lower KGE* limit corresponding to this NSE
+  
+  % Search for the beta_n value at which KGE* leaves
+ % the +/-5% tolerance band
 
+  for b=0:0.0001:0.80
+    a=sqrt((nse_j+b^2)/(2*ks_j-1));
+    r=ks_j*a;
+    trueK=1-sqrt(b^2+(a-1)^2+(r-1)^2);
+    trueK=rounddec(trueK,3);
+ %   [b,trueK, L]
+    if trueK<L; beta_tol=b;break; end
+  end
+ 
  x=(1:1:n)';
  fntsz=14;
  fntwght='bold';
@@ -76,13 +93,20 @@ function drawGraph(filename,panelNr)
  frmt='%1.3f'; j=1;
  txt{j}=['\bf{NSE}\rm= ' sprintf(frmt,NSE)]; j=j+1;
  txt{j}=['\bf{KGE*}\rm= ' sprintf(frmt,KGEm)]; j=j+1;
- txt{j}=['\it{k_s=\rho/\alpha}\rm= ' sprintf(frmt,r/alpha)]; j=j+1;
- txt{j}=['\bf{\rho}\rm= ' sprintf(frmt,r)]; j=j+1;
- txt{j}=['\bf{\alpha}\rm= ' sprintf(frmt,alpha)]; j=j+1;
- txt{j}=['\bf{\beta_n}\rm= ' sprintf(frmt,beta_n)]; j=j+1;
+ txt{j}=['{k_s=\rho/\alpha}= ' sprintf(frmt,r/alpha)]; j=j+1;
+ txt{j}=['{\rho}= ' sprintf(frmt,r)]; j=j+1;
+ txt{j}=['{\alpha}= ' sprintf(frmt,alpha)]; j=j+1;
+ txt{j}=['{\beta_n}= ' sprintf(frmt,beta_n)]; j=j+1;
+ if panelNr~=1
+   txt{j}=['{|\beta_n|_{tol}}= ' sprintf(frmt,beta_tol)];
+   ypos=0.79; 
+ else 
+     ypos=0.829;
+ end
+
  clear j
 
- AddText(txt,fntsz-2,0.05,0.83,'left',fntwght);
+ AddText(txt,fntsz-2,0.05,ypos,'left',fntwght);
  AddText([char(96+panelNr) ')'],fntsz+2,-0.15,1,'left',fntwght);
 end %----
 
