@@ -5,7 +5,7 @@ Fig2_Table1.m: Figure 2 and Table 1 (NSEvsKGE_datasets_0-9.txt and NSEvsKGE_data
 Fig3_4_Table2.m: Figures 3 and 4, and Table 2 (NSEvsKGE_datasets_0-9.txt)
 Fig5.m: Figure 5 (NSEvsKGE_datasets_camels_48.txt)
 Fig6.m: Figure 6 (No file required)
-Figs_Table_Appendix.m: Figures A1, A2, and Table A1 (NSEvsKGE_datasets_camels_48.txt)
+FigsA1A2_Table_Appendix.m: Figures A1, A2, and Table A1 (NSEvsKGE_datasets_camels_48.txt)
 FigA4.m: Figure A4 (FigA4a_05495500_48.in, FigA4b_02349900_48.in and FigA4c_04059500_48.in)
 
 ProcessCamels_files.m: 
